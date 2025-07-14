@@ -1,0 +1,8 @@
+[build]
+builder = "dockerfile"
+dockerfilePath = "./src/EnqueteOnline.API/Dockerfile"
+
+[deploy]
+startCommand = "dotnet EnqueteOnline.API.dll"
+restartPolicyType = "always"
+healthcheckPath = "/health"
