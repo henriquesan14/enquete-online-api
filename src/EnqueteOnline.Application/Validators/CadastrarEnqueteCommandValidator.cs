@@ -17,7 +17,7 @@ namespace EnqueteOnline.Application.Validators
 
             RuleFor(d => d.Encerramento)
                 .NotNull().WithMessage("O campo {PropertyName} é obrigatório")
-                .GreaterThan(DateTime.UtcNow).WithMessage("A data de encerramento deve ser maior que a data atual");
+                .GreaterThan(DateTime.Now).WithMessage("A data de encerramento deve ser maior que a data atual");
 
             RuleFor(d => d.Opcoes)
                 .NotNull().WithMessage("Você deve fornecer as opções da enquete")
