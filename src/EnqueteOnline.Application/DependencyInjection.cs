@@ -15,7 +15,7 @@ namespace EnqueteOnline.Application
                 cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
             });
 
-            services.AddValidatorsFromAssemblyContaining<CadastrarUsuarioCommandValidator>();
+            services.AddValidatorsFromAssemblyContaining<CadastrarEnqueteCommandValidator>();
 
 
             return services;

@@ -8,8 +8,7 @@ namespace EnqueteOnline.Application.Commands.CadastrarEnquete
     {
         public async Task<Guid> Handle(CadastrarEnqueteCommand request, CancellationToken cancellationToken)
         {
-            var opcoes = request.Opcoes.Select(o => OpcaoEnquete.Create(o)).ToList();
-            var enquete = Enquete.Create(request.Titulo, request.Descricao, request.Encerramento, opcoes);
+            var enquete = Enquete.Create(request.Titulo, request.Descricao, request.Encerramento, request.Opcoes);
 
             await unitOfWork.Enquetes.AddAsync(enquete);
             await unitOfWork.CompleteAsync();

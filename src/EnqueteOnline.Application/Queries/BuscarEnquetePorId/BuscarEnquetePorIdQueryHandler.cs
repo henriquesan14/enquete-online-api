@@ -1,5 +1,6 @@
 ﻿using EnqueteOnline.Application.Contracts.CQRS;
 using EnqueteOnline.Application.Contracts.Data;
+using EnqueteOnline.Application.Exceptions;
 using EnqueteOnline.Application.Extensions;
 using EnqueteOnline.Application.ViewModels;
 using EnqueteOnline.Domain.Entities;
@@ -18,6 +19,7 @@ namespace EnqueteOnline.Application.Queries.BuscarEnquetePorId
                 e => e.Votos
             };
             var enquete = await unitOfWork.Enquetes.GetByIdAsync(EnqueteId.Of(request.Id), includes: includes);
+            if (enquete is null) throw new EnqueteNotFoundException(request.Id);
 
             return enquete.ToViewModel();
         }

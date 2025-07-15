@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using FluentValidation;
+using EnqueteOnline.Domain.Exceptions;
 
 namespace EnqueteOnline.API.ErrorHandling
 {
@@ -55,7 +56,19 @@ namespace EnqueteOnline.API.ErrorHandling
                     exception.GetType().Name,
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized
                 ),
-                IntegrationException => (
+                ForbiddenAccessException =>
+                (
+                    exception.Message,
+                    exception.GetType().Name,
+                    context.Response.StatusCode = StatusCodes.Status403Forbidden
+                ),
+                InvalidOperationException =>
+                (
+                    exception.Message,
+                    exception.GetType().Name,
+                    context.Response.StatusCode = StatusCodes.Status400BadRequest
+                ),
+                DomainException => (
                     exception.Message,
                     exception.GetType().Name,
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized

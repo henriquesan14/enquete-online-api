@@ -1,4 +1,5 @@
 ﻿using Carter;
+using EnqueteOnline.Application.Commands.AtualizarEnquete;
 using EnqueteOnline.Application.Commands.CadastrarEnquete;
 using EnqueteOnline.Application.Commands.ExcluirEnquete;
 using EnqueteOnline.Application.Pagination;
@@ -43,6 +44,13 @@ namespace EnqueteOnline.API.Endpoints
             {
                 var query = new ExcluirEnqueteCommand(id);
                 var result = await sender.Send(query);
+
+                return Results.NoContent();
+            });
+
+            group.MapPut("/", [Authorize] async (AtualizarEnqueteCommand command, ISender sender) =>
+            {
+                var result = await sender.Send(command);
 
                 return Results.NoContent();
             });

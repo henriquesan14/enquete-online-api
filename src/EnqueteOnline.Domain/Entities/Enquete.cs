@@ -1,4 +1,5 @@
 ﻿using EnqueteOnline.Domain.Abstractions;
+using EnqueteOnline.Domain.Exceptions;
 using EnqueteOnline.Domain.ValueObjects;
 
 namespace EnqueteOnline.Domain.Entities
@@ -10,17 +11,41 @@ namespace EnqueteOnline.Domain.Entities
 
         public DateTime Encerramento { get; private set; } = default!;
 
-        public static Enquete Create(string titulo, string descricao, DateTime encerramento, List<OpcaoEnquete> opcoes) {
-            return new Enquete {
+        public static Enquete Create(string titulo, string descricao, DateTime encerramento, List<string> opcoes) {
+            var enquete = new Enquete {
                 Id = EnqueteId.Of(Guid.NewGuid()),
                 Titulo = titulo,
                 Descricao = descricao,
                 Encerramento = encerramento,
-                Opcoes = opcoes
             };
+
+            foreach (var opcao in opcoes)
+            {
+                enquete._opcoes.Add(OpcaoEnquete.Create(opcao));
+            }
+
+            return enquete;
         }
 
-        public IReadOnlyCollection<OpcaoEnquete> Opcoes { get; private set; } = new List<OpcaoEnquete>();
+        public void Update(string titulo, string descricao, DateTime encerramento, List<string> novasOpcoes)
+        {
+            if (!PodeEditar)
+                throw new EnqueteJaPossuiVotosException();
+            Titulo = titulo;
+            Descricao = descricao;
+            Encerramento = encerramento;
+
+            _opcoes.Clear();
+
+            foreach (var opcao in novasOpcoes)
+            {
+                _opcoes.Add(OpcaoEnquete.Create(opcao));
+            }
+        }
+        public bool PodeEditar => Votos.Count <= 0;
+
+        private readonly List<OpcaoEnquete> _opcoes = new();
+        public IReadOnlyCollection<OpcaoEnquete> Opcoes => _opcoes.AsReadOnly();
         public IReadOnlyCollection<Voto> Votos { get; private set; } = new List<Voto>();
     }
 }
