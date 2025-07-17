@@ -45,10 +45,10 @@ Além disto é bom ter um editor para trabalhar com o código como [Visual Studi
 
 ```bash
 # Clone este repositório
-$ git clone <https://github.com/henriquesan14/enquete-online-app.git>
+$ git clone <https://github.com/henriquesan14/enquete-online-api.git>
 
 # Acesse a pasta do projeto no terminal/cmd
-$ cd enquete-online-app
+$ cd enquete-online-api
 
 # Vá para a pasta da EnqueteOnline.API
 $ cd src/EnqueteOnline.API
