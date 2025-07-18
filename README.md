@@ -35,7 +35,7 @@ As seguintes padrões foram usados na construção do projeto:
 Antes de começar, você vai precisar ter instalado em sua máquina as seguintes ferramentas:
 [Git](https://git-scm.com), [.NET](https://dotnet.microsoft.com/en-us/).
 [Postgres](https://www.postgresql.org/) ou subir container utilizando o [Docker](https://www.docker.com/).
-Também é preciso configurar connectionString, apiKey riot, informações oauth do Discord, secret JTW no arquivo `enquete-online-app/src/EnqueteOnline.API/appsettings.Development.json`.
+Também é preciso configurar connectionString, apiKey riot, informações oauth do Discord, secret JTW no arquivo `enquete-online-api/src/EnqueteOnline.API/appsettings.Development.json`.
 Além disto é bom ter um editor para trabalhar com o código como [Visual Studio](https://visualstudio.microsoft.com/pt-br/downloads/).
 
 
