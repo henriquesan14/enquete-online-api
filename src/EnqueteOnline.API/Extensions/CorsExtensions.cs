@@ -17,7 +17,7 @@
                     }
                     else
                     {
-                        builder.WithOrigins("")
+                        builder.WithOrigins("https://enquete-online-app.vercel.app")
                                .AllowAnyHeader()
                                .AllowAnyMethod()
                                .AllowCredentials();
