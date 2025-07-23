@@ -13,9 +13,9 @@ namespace EnqueteOnline.API.Endpoints
         {
             var group = app.MapGroup("/api/auth");
 
-            group.MapGet("/google/callback", async (string code, ISender sender) =>
+            group.MapGet("/google/callback", async (string code, bool isMobile, ISender sender) =>
             {
-                LoginGoogleCommand command = new LoginGoogleCommand(code);
+                LoginGoogleCommand command = new LoginGoogleCommand(code, isMobile);
                 var result = await sender.Send(command);
 
                 return Results.Redirect(result.RedirectAppUrl!);
