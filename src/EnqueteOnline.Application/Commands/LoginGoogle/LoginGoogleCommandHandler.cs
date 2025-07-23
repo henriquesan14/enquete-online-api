@@ -54,10 +54,10 @@ namespace EnqueteOnline.Application.Commands.LoginGoogle
             return new AuthResponseViewModel
             (
                 User: user.ToViewModel(),
-                RedirectAppUrl: GenerateRedirectUrl(user, request.isMobile)
+                RedirectAppUrl: GenerateRedirectUrl(user)
             );
         }
-        private string GenerateRedirectUrl(Usuario user, bool isMobile)
+        private string GenerateRedirectUrl(Usuario user)
         {
             var options = new JsonSerializerOptions
             {
@@ -68,7 +68,6 @@ namespace EnqueteOnline.Application.Commands.LoginGoogle
 
             var base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
 
-            if(isMobile) return $"{configuration["Google:RedirectAppUrl"]}?data={base64}";
             return $"{configuration["Google:RedirectAppUrl"]}#data={base64}";
         }
     }

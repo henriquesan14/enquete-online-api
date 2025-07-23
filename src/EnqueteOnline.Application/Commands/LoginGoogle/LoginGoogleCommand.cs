@@ -3,7 +3,7 @@ using EnqueteOnline.Application.ViewModels;
 
 namespace EnqueteOnline.Application.Commands.LoginGoogle
 {
-    public record LoginGoogleCommand(string code, bool isMobile = false) : ICommand<AuthResponseViewModel>
+    public record LoginGoogleCommand(string code) : ICommand<AuthResponseViewModel>
     {
     }
 }
