@@ -2,7 +2,5 @@
 
 namespace EnqueteOnline.Application.Commands.RevokeRefreshToken
 {
-    public record RevokeRefreshTokenCommand : ICommand
-    {
-    }
+    public record RevokeRefreshTokenCommand(string? refreshToken) : ICommand;
 }

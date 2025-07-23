@@ -1,4 +1,4 @@
 ﻿namespace EnqueteOnline.Application.ViewModels
 {
-    public record AuthResponseViewModel(UsuarioViewModel User, string? RedirectAppUrl);
+    public record AuthResponseViewModel(UsuarioViewModel User, string AccessToken, string? RefreshToken);
 }

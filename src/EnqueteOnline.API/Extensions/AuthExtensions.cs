@@ -19,7 +19,7 @@ namespace EnqueteOnline.API.Extensions
             })
             .AddJwtBearer(x =>
             {
-                x.RequireHttpsMetadata = !isDevelopment;
+                x.RequireHttpsMetadata = false;
                 x.SaveToken = true;
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -29,20 +29,6 @@ namespace EnqueteOnline.API.Extensions
                     ValidateAudience = false,
                     ClockSkew = TimeSpan.Zero,
                     ValidateLifetime = true
-                };
-
-                x.Events = new JwtBearerEvents
-                {
-                    OnMessageReceived = context =>
-                    {
-                        var accessToken = context.Request.Cookies["access_token"];
-                        if (!string.IsNullOrEmpty(accessToken))
-                        {
-                            context.Token = accessToken;
-                        }
-
-                        return Task.CompletedTask;
-                    }
                 };
             });
 

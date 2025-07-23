@@ -5,7 +5,8 @@
         Guid? UserId { get; }
         string? IpAddress { get; }
         string? RefreshToken { get; }
-        void SetCookieTokens(string accessToken, string refreshToken);
-        void RemoveCookiesToken();
+        void SetRefreshTokenCookies(string refreshToken);
+        void RemoveRefreshTokenCookies();
+        bool IsMobileClient();
     }
 }
