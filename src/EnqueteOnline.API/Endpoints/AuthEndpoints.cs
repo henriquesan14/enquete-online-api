@@ -48,7 +48,7 @@ namespace EnqueteOnline.API.Endpoints
             {
                 var result = await sender.Send(command);
 
-                return Results.Ok(result.User);
+                return Results.Ok(result);
             });
         }
     }
