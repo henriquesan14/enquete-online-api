@@ -1,4 +1,5 @@
 ﻿using Carter;
+using EnqueteOnline.Application.Commands.LoginAccessTokenGoogle;
 using EnqueteOnline.Application.Commands.LoginFacebook;
 using EnqueteOnline.Application.Commands.LoginGoogle;
 using EnqueteOnline.Application.Commands.RenewRefreshToken;
@@ -18,7 +19,7 @@ namespace EnqueteOnline.API.Endpoints
                 LoginGoogleCommand command = new LoginGoogleCommand(code);
                 var result = await sender.Send(command);
 
-                return Results.Redirect(result.RedirectAppUrl!);
+                return Results.Redirect(result);
             });
 
             group.MapGet("/facebook/callback", async (string code, ISender sender) =>
@@ -26,7 +27,7 @@ namespace EnqueteOnline.API.Endpoints
                 LoginFacebookCommand command = new LoginFacebookCommand(code);
                 var result = await sender.Send(command);
 
-                return Results.Redirect(result.RedirectAppUrl!);
+                return Results.Redirect(result);
             });
 
             group.MapPost("/refresh-token", async (RefreshTokenCommand command, ISender sender, HttpResponse response) =>
@@ -41,6 +42,13 @@ namespace EnqueteOnline.API.Endpoints
                 var result = await sender.Send(command);
 
                 return Results.NoContent();
+            });
+
+            group.MapPost("/login/google", async (LoginAccessTokenGoogleCommand command, ISender sender) =>
+            {
+                var result = await sender.Send(command);
+
+                return Results.Ok(result.User);
             });
         }
     }

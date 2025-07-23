@@ -3,5 +3,5 @@ using EnqueteOnline.Application.ViewModels;
 
 namespace EnqueteOnline.Application.Commands.RenewRefreshToken
 {
-    public record RefreshTokenCommand : ICommand<UsuarioViewModel>;
+    public record RefreshTokenCommand(string refreshToken) : ICommand<AuthResponseViewModel>;
 }

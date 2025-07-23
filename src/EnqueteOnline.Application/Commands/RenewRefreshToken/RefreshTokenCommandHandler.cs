@@ -9,11 +9,14 @@ using EnqueteOnline.Domain.ValueObjects;
 
 namespace EnqueteOnline.Application.Commands.RenewRefreshToken
 {
-    public class RefreshTokenCommandHandler(IUnitOfWork unitOfWork, ITokenService tokenService, ICurrentUserService currentUserService) : ICommandHandler<RefreshTokenCommand, UsuarioViewModel>
+    public class RefreshTokenCommandHandler(IUnitOfWork unitOfWork, ITokenService tokenService, ICurrentUserService currentUserService) : ICommandHandler<RefreshTokenCommand, AuthResponseViewModel>
     {
-        public async Task<UsuarioViewModel> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
+        public async Task<AuthResponseViewModel> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
         {
-            var refreshToken = currentUserService.RefreshToken;
+            var refreshToken = !string.IsNullOrEmpty(request.refreshToken)
+                ? request.refreshToken
+                : currentUserService.RefreshToken;
+
             var existingToken = await unitOfWork.RefreshTokens
                 .GetSingleAsync(rt => rt.Token == refreshToken);
 
@@ -33,14 +36,23 @@ namespace EnqueteOnline.Application.Commands.RenewRefreshToken
 
             existingToken.Revoke(currentUserService.IpAddress!);
             existingToken.SetReplacedByToken(newRefreshToken.Token);
-            
 
             await unitOfWork.RefreshTokens.AddAsync(newRefreshToken);
             await unitOfWork.CompleteAsync();
 
-            currentUserService.SetCookieTokens(authToken.AccessToken, authToken.RefreshToken);
-
-            return user.ToViewModel();
-        }
+            if (currentUserService.IsMobileClient()) {
+                return new AuthResponseViewModel(
+                    User: user.ToViewModel(),
+                    AccessToken: authToken.AccessToken,
+                    RefreshToken: newRefreshToken.Token
+                );
+            }
+            currentUserService.SetRefreshTokenCookies(newRefreshToken.Token);
+            return new AuthResponseViewModel(
+                    User: user.ToViewModel(),
+                    AccessToken: authToken.AccessToken,
+                    RefreshToken: null
+            );
+        }     
     }
 }

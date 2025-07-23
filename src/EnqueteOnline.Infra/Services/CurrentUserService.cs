@@ -52,19 +52,11 @@ namespace EnqueteOnline.Infra.Services
             }
         }
 
-        public void SetCookieTokens(string accessToken, string refreshToken)
+        public void SetRefreshTokenCookies(string refreshToken)
         {
             var httpContext = _httpContextAccessor.HttpContext;
             if (httpContext == null)
                 return;
-
-            httpContext.Response.Cookies.Append("access_token", accessToken, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Expires = DateTime.Now.AddHours(1)
-            });
 
             httpContext.Response.Cookies.Append("refresh_token", refreshToken, new CookieOptions
             {
@@ -75,7 +67,7 @@ namespace EnqueteOnline.Infra.Services
             });
         }
 
-        public void RemoveCookiesToken()
+        public void RemoveRefreshTokenCookies()
         {
             _httpContextAccessor.HttpContext?.Response.Cookies.Delete("refresh_token", new CookieOptions
             {
@@ -84,14 +76,21 @@ namespace EnqueteOnline.Infra.Services
                 HttpOnly = true,
                 SameSite = SameSiteMode.None
             });
+        }
 
-            _httpContextAccessor.HttpContext?.Response.Cookies.Delete("access_token", new CookieOptions
-            {
-                Path = "/",
-                Secure = true,
-                HttpOnly = true,
-                SameSite = SameSiteMode.None
-            });
+        public bool IsMobileClient()
+        {
+            var context = _httpContextAccessor.HttpContext;
+
+            if (context == null)
+                return false;
+
+            var userAgent = context.Request.Headers["User-Agent"].ToString().ToLower();
+            var clientType = context.Request.Headers["X-Client-Type"].ToString().ToLower();
+
+            return clientType == "mobile" ||
+                   userAgent.Contains("flutter") || userAgent.Contains("okhttp") ||
+                   userAgent.Contains("android") || userAgent.Contains("ios");
         }
     }
 }

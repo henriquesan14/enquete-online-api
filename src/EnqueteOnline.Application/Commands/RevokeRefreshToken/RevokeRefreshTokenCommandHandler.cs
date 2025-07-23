@@ -10,18 +10,21 @@ namespace EnqueteOnline.Application.Commands.RevokeRefreshToken
     {
         public async Task<Unit> Handle(RevokeRefreshTokenCommand request, CancellationToken cancellationToken)
         {
-            var refreshToken = currentUserService.RefreshToken;
+            var refreshToken = !string.IsNullOrEmpty(request.refreshToken)
+                ? request.refreshToken
+                : currentUserService.RefreshToken;
             if (string.IsNullOrEmpty(refreshToken))
                 throw new RefreshTokenNotFoundException("refreshToken cookie not found");
 
+            if (string.IsNullOrEmpty(request.refreshToken))
+                currentUserService.RemoveRefreshTokenCookies();
+
             var token = await unitOfWork.RefreshTokens.GetSingleAsync(r => r.Token == refreshToken);
             if (token == null)
-                throw new RefreshTokenNotFoundException(refreshToken);
+                throw new RefreshTokenNotFoundException(refreshToken!);
 
             token.Revoke(currentUserService.IpAddress!);
             await unitOfWork.CompleteAsync();
-
-            currentUserService.RemoveCookiesToken();
 
             return Unit.Value;
         }
