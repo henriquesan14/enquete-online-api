@@ -1,4 +1,5 @@
 ﻿using Carter;
+using EnqueteOnline.Application.Commands.LoginAccessTokenFacebook;
 using EnqueteOnline.Application.Commands.LoginAccessTokenGoogle;
 using EnqueteOnline.Application.Commands.LoginFacebook;
 using EnqueteOnline.Application.Commands.LoginGoogle;
@@ -45,6 +46,13 @@ namespace EnqueteOnline.API.Endpoints
             });
 
             group.MapPost("/login/google", async (LoginAccessTokenGoogleCommand command, ISender sender) =>
+            {
+                var result = await sender.Send(command);
+
+                return Results.Ok(result);
+            });
+
+            group.MapPost("/login/facebook", async (LoginAccessTokenFacebookCommand command, ISender sender) =>
             {
                 var result = await sender.Send(command);
 
