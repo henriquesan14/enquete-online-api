@@ -17,7 +17,7 @@ namespace EnqueteOnline.Application.Commands.LoginAccessTokenFacebook
             var userFacebook = await facebookAuthService.ObterUsuarioAsync(request.accessToken);
             if (userFacebook is null) throw new IntegrationException("Token inválido");
 
-            var user = await unitOfWork.Usuarios.GetSingleAsync(u => u.GoogleId == userFacebook.Id);
+            var user = await unitOfWork.Usuarios.GetSingleAsync(u => u.FacebookId == userFacebook.Id);
 
             if (user is null)
             {
