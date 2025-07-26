@@ -24,18 +24,21 @@ namespace EnqueteOnline.Application.Extensions
                 .GroupBy(v => v.OpcaoEnqueteId)
                 .ToDictionary(g => g.Key, g => g.Count());
 
-            var opcoes = enquete.Opcoes.Select(opcao =>
-            {
-                var votos = votosPorOpcao.TryGetValue(OpcaoEnqueteId.Of(opcao.Id.Value), out var count) ? count : 0;
-                var porcentagem = totalVotos == 0 ? 0 : Math.Round((double)votos / totalVotos * 100, 2);
+            var opcoes = enquete.Opcoes
+                .Select(opcao =>
+                {
+                    var votos = votosPorOpcao.TryGetValue(OpcaoEnqueteId.Of(opcao.Id.Value), out var count) ? count : 0;
+                    var porcentagem = totalVotos == 0 ? 0 : Math.Round((double)votos / totalVotos * 100, 2);
 
-                return new OpcaoEnqueteViewModel(
-                    Id: opcao.Id.Value,
-                    Descricao: opcao.Descricao,
-                    QuantidadeVotos: votos,
-                    Porcentagem: porcentagem
-                );
-            }).ToList();
+                    return new OpcaoEnqueteViewModel(
+                        Id: opcao.Id.Value,
+                        Descricao: opcao.Descricao,
+                        QuantidadeVotos: votos,
+                        Porcentagem: porcentagem
+                    );
+                })
+                .OrderByDescending(o => o.QuantidadeVotos) // Ordenação aplicada aqui
+                .ToList();
 
             return new EnqueteViewModel
             (
