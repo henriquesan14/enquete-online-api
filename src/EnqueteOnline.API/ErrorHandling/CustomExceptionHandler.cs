@@ -32,46 +32,11 @@ namespace EnqueteOnline.API.ErrorHandling
                     exception.GetType().Name,
                     context.Response.StatusCode = StatusCodes.Status400BadRequest
                 ),
-                BadRequestException =>
-                (
-                    exception.Message,
-                    exception.GetType().Name,
-                    context.Response.StatusCode = StatusCodes.Status400BadRequest
-                ),
-                NotFoundException =>
-                (
-                    exception.Message,
-                    exception.GetType().Name,
-                    context.Response.StatusCode = StatusCodes.Status404NotFound
-                ),
-                ConflictException =>
-                (
-                    exception.Message,
-                    exception.GetType().Name,
-                    context.Response.StatusCode = StatusCodes.Status409Conflict
-                ),
-                UnauthorizedException =>
-                (
-                    exception.Message,
-                    exception.GetType().Name,
-                    context.Response.StatusCode = StatusCodes.Status401Unauthorized
-                ),
-                ForbiddenAccessException =>
-                (
-                    exception.Message,
-                    exception.GetType().Name,
-                    context.Response.StatusCode = StatusCodes.Status403Forbidden
-                ),
                 DomainException =>
                 (
                     exception.Message,
                     exception.GetType().Name,
                     context.Response.StatusCode = StatusCodes.Status400BadRequest
-                ),
-                IntegrationException => (
-                    exception.Message,
-                    exception.GetType().Name,
-                    context.Response.StatusCode = StatusCodes.Status500InternalServerError
                 ),
                 DbUpdateException dbEx when dbEx.InnerException is PostgresException pgEx && pgEx.SqlState == "23503" => (
                     "Não foi possível concluir a operação porque o registro está associado a outro recurso no sistema.",

@@ -1,4 +1,5 @@
 ﻿using Carter;
+using EnqueteOnline.API.Extensions;
 using EnqueteOnline.Application.Commands.LoginAccessTokenFacebook;
 using EnqueteOnline.Application.Commands.LoginAccessTokenGoogle;
 using EnqueteOnline.Application.Commands.LoginFacebook;
@@ -20,7 +21,7 @@ namespace EnqueteOnline.API.Endpoints
                 LoginGoogleCommand command = new LoginGoogleCommand(code);
                 var result = await sender.Send(command);
 
-                return Results.Redirect(result);
+                return Results.Redirect(result.Data);
             });
 
             group.MapGet("/facebook/callback", async (string code, ISender sender) =>
@@ -28,35 +29,35 @@ namespace EnqueteOnline.API.Endpoints
                 LoginFacebookCommand command = new LoginFacebookCommand(code);
                 var result = await sender.Send(command);
 
-                return Results.Redirect(result);
+                return Results.Redirect(result.Data);
             });
 
             group.MapPost("/refresh-token", async (RefreshTokenCommand command, ISender sender, HttpResponse response) =>
             {
                 var result = await sender.Send(command);
 
-                return Results.Ok(result);
+                return result.ToMinimalApiResult();
             });
 
             group.MapPost("/logout", async (RevokeRefreshTokenCommand command, ISender sender) =>
             {
                 var result = await sender.Send(command);
 
-                return Results.NoContent();
+                return result.ToMinimalApiResult();
             });
 
             group.MapPost("/login/google", async (LoginAccessTokenGoogleCommand command, ISender sender) =>
             {
                 var result = await sender.Send(command);
 
-                return Results.Ok(result);
+                return result.ToMinimalApiResult();
             });
 
             group.MapPost("/login/facebook", async (LoginAccessTokenFacebookCommand command, ISender sender) =>
             {
                 var result = await sender.Send(command);
 
-                return Results.Ok(result);
+                return result.ToMinimalApiResult();
             });
         }
     }

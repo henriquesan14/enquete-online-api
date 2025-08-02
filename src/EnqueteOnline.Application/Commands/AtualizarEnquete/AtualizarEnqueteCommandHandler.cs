@@ -1,17 +1,17 @@
 ﻿using EnqueteOnline.Application.Contracts.CQRS;
 using EnqueteOnline.Application.Contracts.Data;
 using EnqueteOnline.Application.Contracts.Services;
-using EnqueteOnline.Application.Exceptions;
+using EnqueteOnline.Application.Abstractions;
 using EnqueteOnline.Domain.Entities;
 using EnqueteOnline.Domain.ValueObjects;
-using MediatR;
 using System.Linq.Expressions;
+using System.Net;
 
 namespace EnqueteOnline.Application.Commands.AtualizarEnquete
 {
-    public class AtualizarEnqueteCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService) : ICommandHandler<AtualizarEnqueteCommand, Unit>
+    public class AtualizarEnqueteCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUserService) : ICommandHandler<AtualizarEnqueteCommand, Result>
     {
-        public async Task<Unit> Handle(AtualizarEnqueteCommand request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(AtualizarEnqueteCommand request, CancellationToken cancellationToken)
         {
             List<Expression<Func<Enquete, object>>> includes = new List<Expression<Func<Enquete, object>>>
             {
@@ -19,14 +19,14 @@ namespace EnqueteOnline.Application.Commands.AtualizarEnquete
                 e => e.Opcoes
             };
             var enquete = await unitOfWork.Enquetes.GetByIdAsync(EnqueteId.Of(request.Id), includes: includes);
-            if (enquete == null) throw new EnqueteNotFoundException(request.Id);
-            if (enquete.CreatedBy != currentUserService.UserId) throw new ForbiddenAccessException();
+            if (enquete == null) return Result.Failure("Enquete não encontrada", HttpStatusCode.NotFound);
+            if (enquete.CreatedBy != currentUserService.UserId) return Result.Failure("Acesso negado", HttpStatusCode.Forbidden);
 
             enquete.Update(request.Titulo, request.Descricao, request.Encerramento, request.Opcoes);
 
             await unitOfWork.CompleteAsync();
 
-            return Unit.Value;
+            return Result.Success(statusCode: HttpStatusCode.NoContent);
         }
     }
 }

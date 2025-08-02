@@ -1,4 +1,5 @@
 ﻿using Carter;
+using EnqueteOnline.API.Extensions;
 using EnqueteOnline.Application.Commands.CadastrarVoto;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -15,7 +16,7 @@ namespace EnqueteOnline.API.Endpoints
             {
                 var result = await sender.Send(command);
 
-                return Results.Created($"votos/{result}", result);
+                return result.ToMinimalApiResult($"votos/{result}");
             });
         }
     }

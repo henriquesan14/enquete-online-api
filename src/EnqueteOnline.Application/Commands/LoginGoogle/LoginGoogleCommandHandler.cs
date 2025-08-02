@@ -1,27 +1,28 @@
 ﻿using EnqueteOnline.Application.Contracts.CQRS;
 using EnqueteOnline.Application.Contracts.Data;
 using EnqueteOnline.Application.Contracts.Services;
-using EnqueteOnline.Application.Exceptions;
 using EnqueteOnline.Application.Extensions;
 using EnqueteOnline.Application.ViewModels;
+using EnqueteOnline.Application.Abstractions;
 using EnqueteOnline.Domain.Entities;
 using EnqueteOnline.Domain.ValueObjects;
 using Microsoft.Extensions.Configuration;
+using System.Net;
 using System.Text;
 using System.Text.Json;
 
 namespace EnqueteOnline.Application.Commands.LoginGoogle
 {
     public class LoginGoogleCommandHandler(IGoogleAuthService googleAuthService, IUnitOfWork unitOfWork, ITokenService tokenService,
-        IConfiguration configuration, ICurrentUserService currentUserService) : ICommandHandler<LoginGoogleCommand, string>
+        IConfiguration configuration, ICurrentUserService currentUserService) : ICommandHandler<LoginGoogleCommand, Result<string>>
     {
-        public async Task<string> Handle(LoginGoogleCommand request, CancellationToken cancellationToken)
+        public async Task<Result<string>> Handle(LoginGoogleCommand request, CancellationToken cancellationToken)
         {
             var token = await googleAuthService.ObterTokenAsync(request.code);
-            if (token is null) throw new IntegrationException("Erro ao obter token do Google.");
+            if (token is null) return Result<string>.Failure("Erro ao obter token do Google.", HttpStatusCode.Unauthorized);
 
             var userGoogle = await googleAuthService.ObterUsuarioAsync(token.AccessToken);
-            if (userGoogle is null) throw new IntegrationException("Erro ao obter usuário do Google.");
+            if (userGoogle is null) return Result<string>.Failure("Erro ao obter token do Google.", HttpStatusCode.Unauthorized);
 
             
             var user = await unitOfWork.Usuarios.GetSingleAsync(u => u.GoogleId == userGoogle.Sub);
@@ -58,7 +59,9 @@ namespace EnqueteOnline.Application.Commands.LoginGoogle
 
             currentUserService.SetRefreshTokenCookies(refreshToken.Token);
 
-            return GenerateRedirectUrl(authResponse);
+            var redirectUrl = GenerateRedirectUrl(authResponse);
+
+            return Result<string>.Success(redirectUrl);
         }
         private string GenerateRedirectUrl(AuthResponseViewModel authResponse)
         {
