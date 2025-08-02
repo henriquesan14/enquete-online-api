@@ -1,6 +1,7 @@
-﻿using EnqueteOnline.Application.Contracts.CQRS;
+﻿using EnqueteOnline.Application.Abstractions;
+using EnqueteOnline.Application.Contracts.CQRS;
 
 namespace EnqueteOnline.Application.Commands.AtualizarEnquete
 {
-    public record AtualizarEnqueteCommand(Guid Id, string Titulo, string Descricao, DateTime Encerramento, List<string> Opcoes) : ICommand;
+    public record AtualizarEnqueteCommand(Guid Id, string Titulo, string Descricao, DateTime Encerramento, List<string> Opcoes) : ICommand<Result>;
 }

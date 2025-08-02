@@ -1,27 +1,28 @@
-﻿using EnqueteOnline.Application.Contracts.CQRS;
+﻿using EnqueteOnline.Application.Abstractions;
+using EnqueteOnline.Application.Contracts.CQRS;
 using EnqueteOnline.Application.Contracts.Data;
 using EnqueteOnline.Application.Contracts.Services;
-using EnqueteOnline.Application.Exceptions;
 using EnqueteOnline.Application.Extensions;
 using EnqueteOnline.Application.ViewModels;
 using EnqueteOnline.Domain.Entities;
 using EnqueteOnline.Domain.ValueObjects;
 using Microsoft.Extensions.Configuration;
+using System.Net;
 using System.Text;
 using System.Text.Json;
 
 namespace EnqueteOnline.Application.Commands.LoginFacebook
 {
     public class LoginFacebookCommandHandler(IFacebookAuthService facebookAuthService, IUnitOfWork unitOfWork, ITokenService tokenService,
-        IConfiguration configuration, ICurrentUserService currentUserService) : ICommandHandler<LoginFacebookCommand, string>
+        IConfiguration configuration, ICurrentUserService currentUserService) : ICommandHandler<LoginFacebookCommand, Result<string>>
     {
-        public async Task<string> Handle(LoginFacebookCommand request, CancellationToken cancellationToken)
+        public async Task<Result<string>> Handle(LoginFacebookCommand request, CancellationToken cancellationToken)
         {
             var token = await facebookAuthService.ObterTokenAsync(request.code);
-            if (token is null) throw new IntegrationException("Erro ao obter token do Facebook.");
+            if (token is null) return Result<string>.Failure("Erro ao obter token do Facebook.", HttpStatusCode.Unauthorized);
 
             var userFacebook = await facebookAuthService.ObterUsuarioAsync(token.AccessToken);
-            if (userFacebook is null) throw new IntegrationException("Erro ao obter usuário do Facebook.");
+            if (userFacebook is null) return Result<string>.Failure("Erro ao obter usuário do Facebook.", HttpStatusCode.Unauthorized);
 
 
             var user = await unitOfWork.Usuarios.GetSingleAsync(u => u.FacebookId == userFacebook.Id);
@@ -59,7 +60,9 @@ namespace EnqueteOnline.Application.Commands.LoginFacebook
 
             currentUserService.SetRefreshTokenCookies(refreshToken.Token);
 
-            return GenerateRedirectUrl(authResponse);
+            var redirectUrl = GenerateRedirectUrl(authResponse);
+
+            return Result<string>.Success(redirectUrl);
         }
         private string GenerateRedirectUrl(AuthResponseViewModel authResponse)
         {
